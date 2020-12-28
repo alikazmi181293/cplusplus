@@ -1,0 +1,416 @@
+#include<fstream>
+#include<conio.h>
+#include<string.h>
+#include<iomanip>
+#include<string>
+#include<iostream>
+using namespace std;
+
+class person {
+
+protected:
+	string name, address;
+
+public:
+	string getName()
+	{
+		return name;
+	}
+
+	string getAddress()
+	{
+		return address;
+	}
+
+
+	void setname(string n)
+	{
+		name = n;
+	}
+
+
+	void setaddress(string a)
+	{
+		address = a;
+	}
+
+	void show_contact()
+	{
+		cout << "i am class person show method" << endl;
+		cout << endl << "Name: " << name;
+		cout << endl << "Address: " << address;
+		
+	}
+
+	person() {
+		// default constructor
+		
+		name = "";
+		address = "";
+		
+	}
+
+	person(string n, string a) {
+		// default constructor
+
+		name = n;
+		address = a;
+
+	}
+
+
+
+};
+class contact: public person
+{
+	//inheritence and polymorphism
+	//inheritence is it is inheriting the object of class person , its name and adress
+	//polymorphism is it is cahnging methods at the compile time. On compile time it is decided to call  function of which class...
+	//show_contact method shows the concept of polymorphism.
+
+	long long *ph;
+	string  *email;
+public:
+
+	void create_contact()
+	{
+		int size;
+		cout << "Phone: ";
+		cout << "enter how many numbers this person has" << endl;
+		cin >> size;
+		for (int i = 0; i < size; i++) {
+			cin >> ph[i];
+
+		}
+		
+		cout << "Name: ";
+		cin.ignore();
+		getline(cin, name);
+		cout << "Address: ";
+		cin.ignore();
+		getline(cin, address);
+		cout << "Email address: ";
+		cin.ignore();
+		cout << "enter how many emails person has" << endl;
+		cin >> size;
+		for (int i = 0; i < size; i++) {
+			cin >> email[i];
+
+		}
+
+		cout << "\n";
+	}
+
+	void show_contact()
+	{
+		// function overriding here (function with same name and parameters)
+		cout << "i am class contact show method" << endl;
+		cout << endl << "Phone #: " << ph;
+		cout << endl << "Name: " << name;
+		cout << endl << "Address: " << address;
+		cout << endl << "Email Address : " << email;
+	}
+
+
+
+	//All setters and getters here to get and set the attributes values
+
+	long long * getPhone()
+	{
+		return ph;
+	}
+
+	
+
+	string * getEmail()
+	{
+		return email;
+	}
+
+	
+	void setemail(string e)
+	{
+		int size;
+		cout << "enter how many emails this person has" << endl;
+		cin >> size;
+		for (int i = 0; i < size; i++) {
+			cin >> email[i];
+
+		}
+
+
+	}
+
+	void setph(long long no)
+	{
+		int size;
+		cout << "enter how many numbers this person has" << endl;
+		cin >> size;
+		for (int i = 0; i < size; i++) {
+			cin >> ph[i];
+
+		}
+
+	}
+	//constructors
+	// All thtese constructors are also example of overloading constructors
+	contact() {
+		// default constructor
+		ph = 0;
+		name = "";
+		address = "";
+		
+	}
+
+
+	contact(long long * p, string n, string ad, string  *e, int psize, int esize) {
+		// Parameterized constructor
+		ph = new long long[psize];
+		for (int i = 0; i < psize; i++) {
+			ph[i] = p[i];
+
+		}
+
+		name = n;
+		address = ad;
+		email = new string [esize];
+		for (int i = 0; i < esize; i++) {
+			email[i] = e[i];
+
+		}
+	}
+
+
+	contact(long long *p, int psize ) {
+		// Parameterized constructor
+		ph = new long long[psize];
+		for (int i = 0; i < psize; i++) {
+			ph[i] = p[i];
+
+		}
+		
+	}
+	
+	contact(contact & c1) {
+		// copy constructor
+		ph = c1.ph;
+		name = c1.name;
+		address = c1.address;
+		email = c1.email;
+
+	}
+
+
+};
+
+
+fstream fp;
+contact cont;
+
+void save_contact()
+{
+	fp.open("contactBook.txt", ios::out | ios::app);
+	cont.create_contact();
+	fp.write((char*)&cont, sizeof(contact));
+	fp.close();
+	cout << endl << endl << "Contact Sucessfully Added...!";
+	getchar();
+}
+
+void show_all_contacts()
+{
+	system("cls");
+	cout << "\n\t\t================================\n\t\t\tLIST OF CONTACTS\n\t\t================================\n";
+	fp.open("contactBook.txt", ios::in);
+	while (fp.read((char*)&cont, sizeof(contact)))
+	{
+		cont.show_contact();
+		cout << endl << "=================================================\n" << endl;
+	}
+	fp.close();
+}
+
+
+void display_contact(long long * num)
+{
+	bool found;
+	int ch;
+
+	found = false;
+	fp.open("contactBook.txt", ios::in);
+	while (fp.read((char*)&cont, sizeof(contact)))
+	{
+		if (cont.getPhone() == num)
+		{
+			system("cls");
+			cont.show_contact();
+			found = true;
+		}
+	}
+
+	fp.close();
+	if (found == false) {
+		cout << "\n\nNo record found...";
+	}
+
+
+	getchar();
+}
+
+
+void edit_contact()
+{
+	int s;
+	long long * num;
+	bool found = false;
+	system("cls");
+	cout << "Edit contact\n===============================\n\n\tEnter the number of contact to edit:";
+
+
+	cout << "enter how many number person has" << endl;
+	cin >> s;
+	num = new 	long long[s];
+	for (int i = 0; i < s; i++) {
+		cin >> num[i];
+
+	}
+
+
+	fp.open("contactBook.txt", ios::in | ios::out);
+	while (fp.read((char*)&cont, sizeof(contact)) && found == false)
+	{
+		if (cont.getPhone() == num)
+		{
+			cont.show_contact();
+			cout << "\nPlease Enter The New Details of Contact: " << endl;
+			cont.create_contact();
+			int pos = -1 * static_cast<int>(sizeof(cont));
+			fp.seekp(pos, ios::cur);
+			fp.write((char*)&cont, sizeof(cont));
+			cout << endl << endl << "\t Contact Successfully Updated...!";
+			found = true;
+		}
+	}
+	fp.close();
+	if (found == false)
+		cout << endl << endl << "Contact Not Found...!";
+
+
+}
+
+
+void delete_contact()
+{
+	int s;
+
+
+	fstream fp1;
+	long long * num;
+	int flag = 0;
+	fp.open("contactBook.txt", ios::out | ios::binary | ios::app);
+	fp1.open("temp.txt", ios::out | ios::binary);
+	cout << "Enter number you want to delete: ";
+	cout << "enter how many number person has" << endl;
+	cin >> s;
+	num = new long long[s];
+	for (int i = 0; i < s; i++) {
+		cin >> num[i];
+
+	}
+
+
+	while (fp.read((char*)&cont, sizeof(contact)))
+	{
+		if (cont.getPhone() == num)
+		{
+			cout << "\nThe Contact Deleted Sucessfully...!....\n";
+			cont.show_contact();
+			flag++;
+		}
+		else
+		{
+			fp.write((char*)&cont, sizeof(contact));
+		}
+	}
+	fp.close();
+	fp1.close();
+	if (flag == 0)
+		cout << "\nContact  " << num << " is not in file....\n";
+	remove("contactBook.txt");
+	rename("temp.txt", "contactBook.txt");
+
+}
+
+
+int main(int argc, char *argv[])
+{
+
+
+	system("cls");
+
+
+	for (;;)
+	{
+		int ch;
+		cout << "\n\t **** Welcome to Contact Management System ****";
+		cout << "\n\n\n\t\t\tMAIN MENU\n\t\t=====================\n\t\t[1] Add a new Contact\n\t\t[2] List all Contacts\n\t\t[3] Search for contact\n\t\t[4] Edit a Contact\n\t\t[5] Delete a Contact\n\t\t[0] Exit\n\t\t=================\n\t\t";
+		cout << "Enter the choice:";
+
+		cin >> ch;
+
+		switch (ch)
+		{
+		case 0: cout << "\n\n\t\tThank you...!";
+			exit(0);
+			break;
+			break;
+			break;
+		case 1:save_contact();
+			break;
+		case 2:show_all_contacts();
+			break;
+		case 3:
+			long long *num;
+			system("cls");
+			cout << "\n\n\tPhone: ";
+			cout << "enter how many number person has" << endl;
+			int s;
+			cin >> s;
+			num = new long long[s];
+			for (int i = 0; i < s; i++) {
+				cin >> num[i];
+
+			}
+			display_contact(num);
+			break;
+		case 4:edit_contact();
+			break;
+		case 5:delete_contact();
+			break;
+		default:
+			break;
+		}
+
+		int opt;
+		cout << "\n\n\nEnter the Choice:\n\n\t[1] Main Menu\t\t[0] Exit\n";
+
+		cin >> opt;
+		switch (opt)
+
+		{
+
+		case 1:
+			system("cls");
+			continue;
+
+		case 0:
+
+			exit(0);
+
+		}
+	}
+
+	
+
+	return 0;
+}
